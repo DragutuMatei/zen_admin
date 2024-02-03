@@ -1,0 +1,319 @@
+import React, { useEffect, useState } from "react";
+import Footer from "../components/Footer";
+import { Link } from "react-router-dom";
+import MainButton from "../utils/MainButton";
+import Select from "react-select";
+import { FileUploader } from "react-drag-drop-files";
+import SimpleButton from "../utils/SimpleButton";
+import {
+  FILE_TYPE,
+  UPLOAD_TYPE,
+  CATEGORIES,
+  OPTIONS,
+  AXIOS,
+} from "../utils/Contstants";
+import { toast } from "react-toastify";
+import SecondButton from "../utils/SecondButton";
+import SideNav from "../components/SideNav";
+
+function Meditations({checkit}) {
+  const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
+  const [title, setTitle] = useState("");
+  const [category, setCat] = useState("");
+  const [tags, setTags] = useState([]);
+  const [background, setBack] = useState(null);
+  const [mp3, setMp3] = useState(null);
+  const [voice, setVoice] = useState("");
+  const [duration, setDuration] = useState();
+  const [premium, setPremium] = useState(false);
+  const [large, setLarge] = useState(false);
+  const handleBack = (file) => {
+    setBack(file);
+  };
+
+  const handleMp3 = (file) => {
+    setMp3(file);
+  };
+
+  const uploadMeditatie = async () => {
+    setLoading(true);
+
+    if (
+      title == "" ||
+      category == "" ||
+      tags.length == 0 ||
+      background == null ||
+      mp3 == null ||
+      voice == ""
+    ) {
+      setLoading(false);
+      toast("Completeaza toate campurile!");
+      return;
+    }
+
+    let modi_tags = [];
+    for (let tag of tags) {
+      modi_tags.push(tag.value);
+    }
+    console.log(modi_tags)
+    const form = new FormData();
+    form.append("title", title);
+    form.append("category", category);
+    form.append("tags", JSON.stringify(modi_tags));
+    form.append("background", background);
+    form.append("mp3", mp3);
+    form.append("voice", voice);
+    form.append("duration", duration);
+    form.append("premium", premium);
+    form.append("large", large);
+    form.append("createdAt", Date.now());
+    form.append("plays", 0);
+
+    console.log(premium);
+    console.log(typeof premium);
+
+    await AXIOS.post("meditations/create", form, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        let data = res.data.data;
+        let id = res.data.id;
+        setTitle("");
+        setCat("");
+        setTags([]);
+        setBack(null);
+        setMp3(null);
+        setVoice("");
+        setDuration();
+        setPremium(false);
+        setLarge(false);
+        setData((old) => [[id, data], ...old]);
+        toast("Meditatie adaugata cu succes!");
+      })
+      .catch((err) => {
+        console.log(err);
+        toast("Meditatia nu a fost adaugata!");
+      });
+
+    setLoading(false);
+    setShow(false);
+  };
+
+  const delete_this_shit = async (pk) => {
+    await AXIOS.delete(`meditations/${pk}/delete`)
+      .then((res) => {
+        console.log(res);
+        setData(data.filter((da) => da[0] != pk));
+        toast("Meditatie stearsa cu succes!");
+      })
+      .catch((err) => {
+        console.log(err);
+        toast("Meditatia nu a fost stearsa!");
+      });
+  };
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const get = async () => {
+      await AXIOS.get("meditations/").then((res) => {
+        if (res.data.data && res.data.data.lenght != 0)
+          setData(Object.entries(res.data.data).reverse());
+      });
+    };
+    get();
+  }, []);
+
+  return (
+    <>
+      <SideNav checkit={checkit} />
+      {show && (
+        <div
+          className="over"
+          onClick={(e) => {
+            if (e.target.className === "over" && !loading) {
+              setShow(false);
+            }
+          }}
+        >
+          <div className="form">
+            <h2>New Meditation</h2>
+            <div className="row">
+              <label>Title</label>
+              <input type="text" onChange={(e) => setTitle(e.target.value)} />
+            </div>
+            <div className="row">
+              <label>Category</label>
+              <Select
+                className="select"
+                options={CATEGORIES}
+                onChange={(e) => setCat(e.value)}
+              />
+            </div>
+            <div className="row">
+              <label>Tags</label>
+              <Select
+                className="select"
+                closeMenuOnSelect={false}
+                isMulti
+                options={OPTIONS}
+                onChange={(e) => setTags(e)}
+              />
+            </div>
+            <div className="row">
+              <label>Background</label>
+              <FileUploader
+                handleChange={handleBack}
+                name="file"
+                types={FILE_TYPE}
+              />
+            </div>{" "}
+            <div className="row">
+              <label>Mp3 File</label>
+              <FileUploader
+                handleChange={handleMp3}
+                name="file"
+                types={UPLOAD_TYPE}
+              />
+            </div>
+            <div className="row">
+              <label>Voice</label>
+              <input type="text" onChange={(e) => setVoice(e.target.value)} />
+            </div>
+            <div className="row">
+              <label>Duration (seconds)</label>
+              <input
+                type="number"
+                onChange={(e) => setDuration(e.target.value)}
+              />
+            </div>
+            <div className="row">
+              <label>Premium</label>
+              <select
+                name=""
+                id=""
+                onChange={(e) => setPremium(e.target.value === "true")}
+              >
+                <option value={false}>No</option>
+                <option value={true}>Yes</option>
+              </select>
+            </div>
+            <div className="row">
+              <label>Large</label>
+              <select
+                name=""
+                id=""
+                onChange={(e) => setLarge(e.target.value === "true")}
+              >
+                <option value={false}>No</option>
+                <option value={true}>Yes</option>
+              </select>
+            </div>
+            <div className="buttons">
+              {!loading ? (
+                <>
+                  <SimpleButton text={"Close"} action={() => setShow(false)} />
+                  <MainButton text={"Submit"} action={uploadMeditatie} />
+                </>
+              ) : (
+                <>
+                  <p>Loading...</p>
+                </>
+              )}{" "}
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="fullpage">
+        <div className="top">
+          <div className="left">
+            <h3>Meditations</h3>
+            <div className="links">
+              <Link to={"/"}>Home</Link> / <b>Meditations</b>
+            </div>
+          </div>
+          <div className="right">
+            <MainButton text={"New Meditation"} action={() => setShow(true)} />
+          </div>
+        </div>
+
+        <table className="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Tags</th>
+              <th>Category</th>
+              <th>Mp3 File</th>
+              <th>Duration</th>
+              <th>Plays</th>
+              <th>is Premium?</th>
+              <th>Created at</th>
+              <th>Details</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data &&
+              data.map((da, index) => {
+                const dateObject = new Date(Number(da[1].createdAt));
+
+                return (
+                  <tr key={da[0]}>
+                    <td>{index}</td>
+                    <td>
+                      <img src={da[1].background} alt="" width={60} />
+                    </td>
+                    <td>{da[1].title}</td>
+                    <td>
+                      {da[1].tags &&
+                        da[1].tags.map((tag) => {
+                          return <SecondButton text={tag} />;
+                        })}
+                    </td>
+                    <td>
+                      <MainButton text={da[1].category} />
+                    </td>
+                    <td>
+                      <audio controls src={da[1].mp3}></audio>
+                    </td>
+                    <td>{da[1].duration}</td>
+                    <td>{da[1].plays} </td>
+                    <td>
+                      {da[1].premium  ? (
+                        <MainButton text={"Premium"} />
+                      ) : (
+                        <SecondButton text={"Not Premium"} />
+                      )}
+                    </td>
+                    <td>
+                      {String(dateObject.getUTCDate()).padStart(2, "0")}/
+                      {String(dateObject.getUTCMonth() + 1).padStart(2, "0")}/
+                      {dateObject.getUTCFullYear()}
+                    </td>
+                    <td>
+                      <Link to={`/meditations/${da[0]}`}>Details</Link>
+                    </td>
+                    <td>
+                      <SecondButton
+                        text={"Delete"}
+                        action={() => delete_this_shit(da[0])}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+        <Footer />
+      </div>
+    </>
+  );
+}
+
+export default Meditations;

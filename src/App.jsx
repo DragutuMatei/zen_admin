@@ -16,13 +16,15 @@ import "./scss/main.scss";
 import Login from "./Pages/Login";
 import { AXIOS } from "./utils/Contstants";
 import MedDetails from "./Pages/MedDetails";
+import Yoga from "./Pages/Yoga";
+import Podcast from "./Pages/Podcast";
 
 const App = () => {
   const [isAuthenticated, setAuth] = useState(false);
 
 
   const checkit = () => {
-    // setAuth(!!localStorage.getItem("auth"));
+    setAuth(!!localStorage.getItem("auth"));
   };
   useEffect(() => {
     let teest = !!localStorage.getItem("auth");
@@ -40,11 +42,7 @@ const App = () => {
           <Route
             path="/meditations/:id"
             element={
-              // isAuthenticated ? (
                 <MedDetails checkit={checkit} />
-              // ) : (
-                // <Navigate to="/" />
-              // )
             }
           />
           <Route
@@ -66,7 +64,16 @@ const App = () => {
                 <Navigate to="/" />
               )
             }
-          />
+          /> <Route
+          path="/yoga"
+          element={
+            isAuthenticated ? (
+              <Yoga checkit={checkit} />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
           <Route
             path="/cards"
             element={
@@ -82,6 +89,16 @@ const App = () => {
             element={
               isAuthenticated ? (
                 <Sounds checkit={checkit} />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="/podcast"
+            element={
+              isAuthenticated ? (
+                <Podcast checkit={checkit} />
               ) : (
                 <Navigate to="/" />
               )

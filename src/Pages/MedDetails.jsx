@@ -32,8 +32,8 @@ export default function MedDetails({ checkit }) {
           </div>
         </>
       ) : (
-        <>
-          <Navigate to="/" />
+        <>  
+          {/* <Navigate to="/" /> */}
         </>
       )}
     </>

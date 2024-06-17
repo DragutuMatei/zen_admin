@@ -6,19 +6,22 @@ import { GiSoundWaves } from "react-icons/gi";
 import { MdOutlineAir } from "react-icons/md";
 import SecondButton from "../utils/SecondButton";
 
-function SideNav({checkit}) {
+function SideNav({ checkit }) {
   const navigate = useNavigate();
   return (
     <nav className="sidenav">
       <div className="header">
         <img src={require("../utils/imgs/person.png")} alt="" />
         <h2>Admin</h2>
-      </div>
+      </div>{" "}
       <Link to="/meditations">
         <GiMeditation /> Meditations
+      </Link>{" "}
+      <Link to="/yoga">
+        <GiMeditation /> Yoga
       </Link>
-      <Link to="/breaths">
-        <MdOutlineAir /> Breaths
+      <Link to="/podcast">
+        <GiMeditation /> Podcast
       </Link>
       <Link to="/cards">
         <IoCardSharp /> Cards
@@ -29,8 +32,8 @@ function SideNav({checkit}) {
       <SecondButton
         text={"Logout"}
         action={() => {
-            localStorage.removeItem("auth");
-            // checkit();
+          localStorage.removeItem("auth");
+          checkit();
           navigate("/");
         }}
       />

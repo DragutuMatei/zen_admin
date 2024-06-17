@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import SecondButton from "../utils/SecondButton";
 import SideNav from "../components/SideNav";
 
-function Meditations({checkit}) {
+function Meditations({ checkit }) {
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
   const [title, setTitle] = useState("");
@@ -28,6 +28,16 @@ function Meditations({checkit}) {
   const [duration, setDuration] = useState();
   const [premium, setPremium] = useState(false);
   const [large, setLarge] = useState(false);
+
+  const cat = async (id) => {
+    await AXIOS.get(`meditations/${id}/category/`).then((res) => {
+      console.log(res.data.data);
+
+          setData(Object.entries(res.data.data).reverse());
+
+    });
+  }
+
   const handleBack = (file) => {
     setBack(file);
   };
@@ -56,11 +66,11 @@ function Meditations({checkit}) {
     for (let tag of tags) {
       modi_tags.push(tag.value);
     }
-    console.log(modi_tags)
+    console.log(modi_tags);
     const form = new FormData();
     form.append("title", title);
     form.append("category", category);
-    form.append("tags", JSON.stringify(modi_tags));
+    form.append("tags", modi_tags);
     form.append("background", background);
     form.append("mp3", mp3);
     form.append("voice", voice);
@@ -223,7 +233,7 @@ function Meditations({checkit}) {
                 <>
                   <p>Loading...</p>
                 </>
-              )}{" "}
+              )} 
             </div>
           </div>
         </div>
@@ -262,14 +272,18 @@ function Meditations({checkit}) {
             {data &&
               data.map((da, index) => {
                 const dateObject = new Date(Number(da[1].createdAt));
-
+                console.log(da[1]);
                 return (
                   <tr key={da[0]}>
                     <td>{index}</td>
                     <td>
                       <img src={da[1].background} alt="" width={60} />
                     </td>
-                    <td>{da[1].title}</td>
+                    <td>
+                    <Link to={`/meditations/${da[1].createdAt}`}>  
+                        {da[1].title}
+                      </Link>
+                    </td>
                     <td>
                       {da[1].tags &&
                         da[1].tags.map((tag) => {
@@ -277,7 +291,7 @@ function Meditations({checkit}) {
                         })}
                     </td>
                     <td>
-                      <MainButton text={da[1].category} />
+                      <MainButton action={()=>cat(da[1].category)} text={da[1].category} />
                     </td>
                     <td>
                       <audio controls src={da[1].mp3}></audio>
@@ -285,7 +299,7 @@ function Meditations({checkit}) {
                     <td>{da[1].duration}</td>
                     <td>{da[1].plays} </td>
                     <td>
-                      {da[1].premium  ? (
+                      {da[1].premium ? (
                         <MainButton text={"Premium"} />
                       ) : (
                         <SecondButton text={"Not Premium"} />

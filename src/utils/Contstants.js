@@ -3,6 +3,7 @@ import axios from "axios";
 const FILE_TYPE = ["JPG", "PNG", "GIF"];
 
 const UPLOAD_TYPE = ["MP3"];
+const VIDEO_TYPE = ["MP4"];
 
 const CATEGORIES = [
   { value: "ok1", label: "ok1" },
@@ -25,7 +26,7 @@ const OPTIONS = [
 ];
 
 const AXIOS = axios.create({
-  baseURL: "http://localhost:8000/",
+  baseURL: "http://192.168.1.196:8000/",
   headers: {
     "content-type": "application/json",
   },
@@ -36,6 +37,7 @@ export {
   UPLOAD_TYPE,
   CATEGORIES,
   OPTIONS,
+  VIDEO_TYPE,
   AXIOS,
   CATEGORIES_SOUNDS,
 };

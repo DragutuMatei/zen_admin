@@ -5,7 +5,7 @@ import MainButton from "../utils/MainButton";
 import Select from "react-select";
 import { FileUploader } from "react-drag-drop-files";
 import SimpleButton from "../utils/SimpleButton";
-import { AXIOS, VIDEO_TYPE } from "../utils/Contstants";
+import { AXIOS, FILE_TYPE, VIDEO_TYPE } from "../utils/Contstants";
 import { toast } from "react-toastify";
 import SecondButton from "../utils/SecondButton";
 import SideNav from "../components/SideNav";
@@ -18,6 +18,12 @@ function Podcast({ checkit }) {
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
   const [data, setData] = useState([]);
+
+  const [background, setBack] = useState(null);
+
+  const handleBack = (file) => {
+    setBack(file);
+  };
 
   const delete_this_shit = async (pk) => {
     await AXIOS.delete(`podcast/${pk}/delete`)
@@ -37,13 +43,14 @@ function Podcast({ checkit }) {
   const uploadYoga = async () => {
     setLoading(true);
 
-    if (title == "" || mp4 == null) {
+    if (title == "" || background == null || mp4 == null) {
       setLoading(false);
       toast("Completeaza toate campurile!");
       return;
     }
     const form = new FormData();
     form.append("title", title);
+    form.append("background", background);
     form.append("mp4", mp4);
     form.append("duration", duration);
     form.append("premium", premium);
@@ -104,7 +111,14 @@ function Podcast({ checkit }) {
               <label>Title</label>
               <input type="text" onChange={(e) => setTitle(e.target.value)} />
             </div>
-
+            <div className="row">
+              <label>Background</label>
+              <FileUploader
+                handleChange={handleBack}
+                name="file"
+                types={FILE_TYPE}
+              />
+            </div>
             <div className="row">
               <label>Mp4 File</label>
               <FileUploader
@@ -164,6 +178,7 @@ function Podcast({ checkit }) {
           <thead>
             <tr>
               <th>#</th>
+              <th>Thumbnail</th>
               <th>video</th>
               <th>Title</th>
               <th>Duration</th>
@@ -182,6 +197,9 @@ function Podcast({ checkit }) {
                 return (
                   <tr key={da[0]}>
                     <td>{index}</td>
+                    <td>
+                      <img src={da[1].background} width={60} alt="" />
+                    </td>
                     <td>
                       <video width="60" src={da[1].mp4}></video>{" "}
                     </td>
@@ -202,7 +220,19 @@ function Podcast({ checkit }) {
                       {dateObject.getUTCFullYear()}
                     </td>
                     <td>
-                      <Link to={`/podcast/${da[0]}`}>Details</Link>
+                      <button
+                        onClick={async () => {
+                          const form = new FormData();
+                          form.append("email", "mateidr7@gmail.com");
+                          await AXIOS.post(
+                            `podcast/${da[1].createdAt}/details/`, form
+                          ).then(res => {
+                            console.log(res)
+                          });
+                        }}
+                      >
+                        Details
+                      </button>
                     </td>
                     <td>
                       <SecondButton

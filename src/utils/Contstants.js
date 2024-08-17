@@ -26,7 +26,8 @@ const OPTIONS = [
 ];
 
 const AXIOS = axios.create({
-  baseURL: "http://192.168.1.196:8000/",
+  // baseURL: "http://192.168.1.196:8000/",
+  baseURL: "http://localhost:3001/",
   headers: {
     "content-type": "application/json",
   },

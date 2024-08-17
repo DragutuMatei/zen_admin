@@ -30,13 +30,12 @@ function Meditations({ checkit }) {
   const [large, setLarge] = useState(false);
 
   const cat = async (id) => {
-    await AXIOS.get(`meditations/${id}/category/`).then((res) => {
-      console.log(res.data.data);
+    // await AXIOS.get(`meditations/${id}/category/`).then((res) => {
+    //   console.log(res.data.data);
 
-          setData(Object.entries(res.data.data).reverse());
-
-    });
-  }
+    //   setData(Object.entries(res.data.data).reverse());
+    // });
+  };
 
   const handleBack = (file) => {
     setBack(file);
@@ -83,60 +82,122 @@ function Meditations({ checkit }) {
     console.log(premium);
     console.log(typeof premium);
 
-    await AXIOS.post("meditations/create", form, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
-      .then((res) => {
-        console.log(res);
-        let data = res.data.data;
-        let id = res.data.id;
-        setTitle("");
-        setCat("");
-        setTags([]);
-        setBack(null);
-        setMp3(null);
-        setVoice("");
-        setDuration();
-        setPremium(false);
-        setLarge(false);
-        setData((old) => [[id, data], ...old]);
-        toast("Meditatie adaugata cu succes!");
-      })
-      .catch((err) => {
-        console.log(err);
-        toast("Meditatia nu a fost adaugata!");
-      });
+    // await AXIOS.post("meditations/create", form, {
+    //   headers: {
+    //     "Content-Type": "multipart/form-data",
+    //   },
+    // })
+    //   .then((res) => {
+    //     console.log(res);
+    //     let data = res.data.data;
+    //     let id = res.data.id;
+    //     setTitle("");
+    //     setCat("");
+    //     setTags([]);
+    //     setBack(null);
+    //     setMp3(null);
+    //     setVoice("");
+    //     setDuration();
+    //     setPremium(false);
+    //     setLarge(false);
+    //     setData((old) => [[id, data], ...old]);
+    //     toast("Meditatie adaugata cu succes!");
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //     toast("Meditatia nu a fost adaugata!");
+    //   });
 
     setLoading(false);
     setShow(false);
   };
 
   const delete_this_shit = async (pk) => {
-    await AXIOS.delete(`meditations/${pk}/delete`)
-      .then((res) => {
-        console.log(res);
-        setData(data.filter((da) => da[0] != pk));
-        toast("Meditatie stearsa cu succes!");
-      })
-      .catch((err) => {
-        console.log(err);
-        toast("Meditatia nu a fost stearsa!");
-      });
+    // await AXIOS.delete(`meditations/${pk}/delete`)
+    //   .then((res) => {
+    //     setData(data.filter((da) => da[0] != pk));
+    //     toast("Meditatie stearsa cu succes!");
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //     toast("Meditatia nu a fost stearsa!");
+    //   });
   };
 
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const get = async () => {
-      await AXIOS.get("meditations/").then((res) => {
-        if (res.data.data && res.data.data.lenght != 0)
-          setData(Object.entries(res.data.data).reverse());
-      });
+      // await AXIOS.get("meditations/").then((res) => {
+      //   if (res.data.data && res.data.data.lenght != 0)
+      //     setData(Object.entries(res.data.data).reverse());
+      // });
+
+      const form = new FormData();
+      form.append("email", "mateidr7@gmail.com");
+      // form.append("plan", 1);
+
+      // await AXIOS.post("yoga/updateCountYoga/", form).then((res) => {
+      //   console.log(res.data);
+      // });
     };
     get();
+    fetchUserInfo();
   }, []);
+  ///                 LOCALSTORAGE
+  const check_in_pref = (id) => {
+    const datas = JSON.parse(localStorage.getItem("preferate"));
+    return datas.some((med) => med.id == id);
+  };
+
+  const delete_pref = (id) => {
+    const datas = JSON.parse(localStorage.getItem("preferate"));
+    const update_data = datas.filter((med) => med.id == id);
+    const newdata = JSON.stringify(update_data);
+    localStorage.setItem("preferate", newdata);
+  };
+
+  const save = (data, id) => {
+    if (localStorage.getItem("preferate") != null) {
+      const datas = JSON.parse(localStorage.getItem("preferate"));
+      datas.push({ id, ...data });
+      const newdata = JSON.stringify(datas);
+      console.log(newdata);
+      localStorage.setItem("preferate", newdata);
+    } else {
+      const datas = [{ id, ...data }];
+      console.log("datas:", datas);
+      const newdata = "[" + JSON.stringify(data) + "]";
+      console.log("newdata: ", newdata);
+      localStorage.setItem("preferate", newdata);
+      const olddata = JSON.parse(newdata);
+      console.log("olddata: ", olddata);
+    }
+  };
+
+  ///                 GetUserInfo
+  const [user, setUser] = useState({});
+
+  const fetchUserInfo = async () => {
+    let token = localStorage.getItem("auth");
+    try {
+      const response = await AXIOS.get("idk/", {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      const userInfo = response.data;
+      setUser(response);
+      console.log("User Information:", userInfo);
+      // You can store the user information in state or use it as needed
+    } catch (error) {
+      console.error(
+        "Error fetching user information:",
+        error.response.data.error
+      );
+    }
+  };
 
   return (
     <>
@@ -233,7 +294,7 @@ function Meditations({ checkit }) {
                 <>
                   <p>Loading...</p>
                 </>
-              )} 
+              )}
             </div>
           </div>
         </div>
@@ -243,6 +304,7 @@ function Meditations({ checkit }) {
           <div className="left">
             <h3>Meditations</h3>
             <div className="links">
+              {/* <pre>{JSON.stringify(user)}</pre> */}
               <Link to={"/"}>Home</Link> / <b>Meditations</b>
             </div>
           </div>
@@ -271,8 +333,10 @@ function Meditations({ checkit }) {
           <tbody>
             {data &&
               data.map((da, index) => {
+                const isSaved = check_in_pref(da[0]);
+                // console.log(isSaved);
                 const dateObject = new Date(Number(da[1].createdAt));
-                console.log(da[1]);
+                // console.log(da[0]);
                 return (
                   <tr key={da[0]}>
                     <td>{index}</td>
@@ -280,7 +344,7 @@ function Meditations({ checkit }) {
                       <img src={da[1].background} alt="" width={60} />
                     </td>
                     <td>
-                    <Link to={`/meditations/${da[1].createdAt}`}>  
+                      <Link to={`/meditations/${da[1].createdAt}`}>
                         {da[1].title}
                       </Link>
                     </td>
@@ -291,7 +355,10 @@ function Meditations({ checkit }) {
                         })}
                     </td>
                     <td>
-                      <MainButton action={()=>cat(da[1].category)} text={da[1].category} />
+                      <MainButton
+                        action={() => cat(da[1].category)}
+                        text={da[1].category}
+                      />
                     </td>
                     <td>
                       <audio controls src={da[1].mp3}></audio>
@@ -311,8 +378,20 @@ function Meditations({ checkit }) {
                       {dateObject.getUTCFullYear()}
                     </td>
                     <td>
-                      <Link to={`/meditations/${da[0]}`}>Details</Link>
+                      {isSaved ? (
+                        <button onClick={() => delete_pref(da[0])}>
+                          delete from favorites
+                        </button>
+                      ) : (
+                        <button onClick={() => save(da[1], da[0])}>
+                          save in favorites
+                        </button>
+                      )}
+                      <Link to={`/meditations/${da[1].createdAt}`}>Details</Link>
                     </td>
+                    {/* <td>
+                      <Link to={`/meditations/${da[0]}`}>Details</Link>
+                    </td> */}
                     <td>
                       <SecondButton
                         text={"Delete"}

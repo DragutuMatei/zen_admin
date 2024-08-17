@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { AXIOS } from "./utils/Contstants";
 const axios_fara_cred = axios.create({
   baseURL: "http://localhost:8000/",
   // withCredentials: true,
@@ -31,12 +32,35 @@ const Login = () => {
       console.error("Login error:", error.response.data.error);
     }
   };
+
+
+
+
+  const handleregister = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios_fara_cred.post("register/", {
+        email,
+        password,
+      });
+      console.log(response.data);
+      console.log("Login successful. Token:", response.data.token);
+      localStorage.setItem("auth", response.data.token);
+      fetchUserInfo();
+    } catch (error) {
+      console.error("Login error:", error.response.data.error);
+    }
+  };
+
+
+
   const [user, setUser] = useState({});
 
   const fetchUserInfo = async () => {
     let token = localStorage.getItem("auth");
     try {
-      const response = await axios.get("http://localhost:8000/idk/", {
+      const response = await AXIOS.get("idk/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -57,7 +81,7 @@ const Login = () => {
   return (
     <div>
       <h2>Login</h2>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleregister}>
         <label>Email:</label>
         <input
           type="email"

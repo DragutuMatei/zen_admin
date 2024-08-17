@@ -4,18 +4,19 @@ import { AXIOS } from "../utils/Contstants";
 import SideNav from "../components/SideNav";
 
 export default function MedDetails({ checkit }) {
-  const { id } = useParams();
-  console.log(id);
+  const { category, id } = useParams();
+  console.log(category, id);
   const [isAuthenticated, setAuth] = useState(false);
 
   const [med, setMed] = useState({});
   useEffect(() => {
     let teest = !!localStorage.getItem("auth");
-      setAuth(teest);
-      
+    setAuth(teest);
+
     const getOne = async (id) => {
-      await AXIOS.get(`meditations/${id}/details/`).then((res) => {
-        console.log(res.data.data);
+      console.log(category);
+      await AXIOS.get(`/getMedFromCatById/${category}/${id}`).then((res) => {
+        console.log(res);
         setMed(res.data.data);
       });
     };
@@ -32,9 +33,7 @@ export default function MedDetails({ checkit }) {
           </div>
         </>
       ) : (
-        <>  
-          {/* <Navigate to="/" /> */}
-        </>
+        <>{/* <Navigate to="/" /> */}</>
       )}
     </>
   );

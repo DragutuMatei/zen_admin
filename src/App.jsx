@@ -18,10 +18,12 @@ import { AXIOS } from "./utils/Contstants";
 import MedDetails from "./Pages/MedDetails";
 import Yoga from "./Pages/Yoga";
 import Podcast from "./Pages/Podcast";
+import Meditations_v2 from "./Pages/Meditations_v2";
+import Mesaj from "./Pages/Mesaj";
+import MesajDetail from "./Pages/MesajDetail";
 
 const App = () => {
   const [isAuthenticated, setAuth] = useState(false);
-
 
   const checkit = () => {
     setAuth(!!localStorage.getItem("auth"));
@@ -40,16 +42,28 @@ const App = () => {
       <Router>
         <Routes>
           <Route
-            path="/meditations/:id"
-            element={
-                <MedDetails checkit={checkit} />
-            }
+            path="/meditations/:category/:id"
+            element={<MedDetails checkit={checkit} />}
+          />
+          <Route
+            path="/getMessageById/:id"
+            element={<MesajDetail checkit={checkit} />}
           />
           <Route
             path="/meditations"
             element={
               isAuthenticated ? (
-                <Meditations checkit={checkit} />
+                <Meditations_v2 checkit={checkit} />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="/messages"
+            element={
+              isAuthenticated ? (
+                <Mesaj checkit={checkit} />
               ) : (
                 <Navigate to="/" />
               )
@@ -64,16 +78,13 @@ const App = () => {
                 <Navigate to="/" />
               )
             }
-          /> <Route
-          path="/yoga"
-          element={
-            isAuthenticated ? (
-              <Yoga checkit={checkit} />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        />
+          />{" "}
+          <Route
+            path="/yoga"
+            element={
+              isAuthenticated ? <Yoga checkit={checkit} /> : <Navigate to="/" />
+            }
+          />
           <Route
             path="/cards"
             element={

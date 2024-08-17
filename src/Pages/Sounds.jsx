@@ -216,6 +216,7 @@ function Sounds() {
               <th>Plays</th>
               <th>is Premium?</th>
               <th>Created at</th>
+              <th>Details</th>
               <th>Delete</th>
             </tr>
           </thead>
@@ -250,6 +251,22 @@ function Sounds() {
                       {String(dateObject.getUTCDate()).padStart(2, "0")}/
                       {String(dateObject.getUTCMonth() + 1).padStart(2, "0")}/
                       {dateObject.getUTCFullYear()}
+                    </td>
+                    <td>
+                      <button
+                        onClick={async () => {
+                          const form = new FormData();
+                          form.append("email", "mateidr7@gmail.com");
+                          await AXIOS.post(
+                            `sounds/${da[1].createdAt}/details/`,
+                            form
+                          ).then((res) => {
+                            console.log(res);
+                          });
+                        }}
+                      >
+                        Details
+                      </button>
                     </td>
                     <td>
                       <SecondButton

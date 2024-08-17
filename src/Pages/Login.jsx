@@ -7,20 +7,22 @@ function Login({ checkit }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
- 
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
+      // const response = await AXIOS.post("register/", {
       const response = await AXIOS.post("login/", {
         email,
         password,
-        plan: "admin",
+        // plan: "admin",
       });
+      console.log(response);
       if (response.data.admin) {
         console.log("Login successful. Token:", response.data.token);
-          localStorage.setItem("auth", response.data.token);
-          checkit()
+        localStorage.setItem("auth", response.data.token);
+        checkit();
         navigate("/meditations");
       }
     } catch (error) {

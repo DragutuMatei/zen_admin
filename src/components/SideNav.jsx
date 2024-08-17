@@ -17,15 +17,18 @@ function SideNav({ checkit }) {
       <Link to="/meditations">
         <GiMeditation /> Meditations
       </Link>{" "}
+      <Link to="/messages">
+        <GiMeditation /> Messages
+      </Link>{" "}
       <Link to="/yoga">
         <GiMeditation /> Yoga
       </Link>
       <Link to="/podcast">
         <GiMeditation /> Podcast
       </Link>
-      <Link to="/cards">
+      {/* <Link to="/cards">
         <IoCardSharp /> Cards
-      </Link>
+      </Link> */}
       <Link to="/sounds">
         <GiSoundWaves /> Sounds
       </Link>

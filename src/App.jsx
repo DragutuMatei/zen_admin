@@ -21,6 +21,8 @@ import Podcast from "./Pages/Podcast";
 import Meditations_v2 from "./Pages/Meditations_v2";
 import Mesaj from "./Pages/Mesaj";
 import MesajDetail from "./Pages/MesajDetail";
+import firebase from "firebase/compat/app";
+import Sounds_v2 from "./Pages/Sounds_v2";
 
 const App = () => {
   const [isAuthenticated, setAuth] = useState(false);
@@ -35,6 +37,7 @@ const App = () => {
 
   useEffect(() => {
     console.log(isAuthenticated);
+    
   }, [, isAuthenticated]);
 
   return (
@@ -50,79 +53,51 @@ const App = () => {
             element={<MesajDetail checkit={checkit} />}
           />
           <Route
-            path="/meditations"
+            path="/"
+            // path="/meditations"
             element={
-              isAuthenticated ? (
                 <Meditations_v2 checkit={checkit} />
-              ) : (
-                <Navigate to="/" />
-              )
             }
           />
           <Route
             path="/messages"
             element={
-              isAuthenticated ? (
                 <Mesaj checkit={checkit} />
-              ) : (
-                <Navigate to="/" />
-              )
             }
           />
           <Route
             path="/breaths"
             element={
-              isAuthenticated ? (
                 <Breaths checkit={checkit} />
-              ) : (
-                <Navigate to="/" />
-              )
             }
           />{" "}
           <Route
             path="/yoga"
-            element={
-              isAuthenticated ? <Yoga checkit={checkit} /> : <Navigate to="/" />
+            element={  <Yoga checkit={checkit} /> 
             }
           />
           <Route
             path="/cards"
             element={
-              isAuthenticated ? (
                 <Cards checkit={checkit} />
-              ) : (
-                <Navigate to="/" />
-              )
             }
           />
           <Route
             path="/sounds"
             element={
-              isAuthenticated ? (
-                <Sounds checkit={checkit} />
-              ) : (
-                <Navigate to="/" />
-              )
+                <Sounds_v2 checkit={checkit} />
             }
           />
           <Route
             path="/podcast"
             element={
-              isAuthenticated ? (
                 <Podcast checkit={checkit} />
-              ) : (
-                <Navigate to="/" />
-              )
             }
           />
           <Route
-            path="/"
+            path="/login"
             element={
-              isAuthenticated ? (
-                <Navigate to={"/meditations"} />
-              ) : (
                 <Login checkit={checkit} />
-              )
             }
           />
         </Routes>

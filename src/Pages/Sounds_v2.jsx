@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SideNav from "../components/SideNav";
-import { AXIOS, CATEGORIES, FILE_TYPE, VIDEO_TYPE } from "../utils/Contstants";
+import { AXIOS, CATEGORIES, FILE_TYPE, UPLOAD_TYPE } from "../utils/Contstants";
 import MainButton from "../utils/MainButton";
 import SimpleButton from "../utils/SimpleButton";
 import { FileUploader } from "react-drag-drop-files";
@@ -9,7 +9,7 @@ import Footer from "../components/Footer";
 import SecondButton from "../utils/SecondButton";
 import { Link } from "react-router-dom";
 
-function Yoga({checkit}) {
+function Sounds_v2({checkit}) {
     const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
@@ -24,7 +24,7 @@ function Yoga({checkit}) {
     const [title, settitle] = useState("");
     const [isLocked, setisLocked] = useState(false);
     const [duration, setduration] = useState("");
-    const [yogaLink, setyogaLink] = useState(null);
+    const [listenLink, setlistenLink] = useState(null);
   
     const [categories, setCategories] = useState([]);
     const [update, setUpdate] = useState(0);
@@ -35,7 +35,7 @@ function Yoga({checkit}) {
     const getAllCategories = async () => {
       setCategories([]);
       setData([]);
-      await AXIOS.get(`/getAllyogaCats`).then((res) => {
+      await AXIOS.get(`/getAllListenCats`).then((res) => {
         const data = res.data;
         data.data.forEach((item) => {
           setCategories((old) => [
@@ -46,7 +46,7 @@ function Yoga({checkit}) {
             },
             ...old,
           ]);
-          let arr = [...item.yogaRoutines];
+          let arr = [...item.listenRoutines];
   
           arr.forEach((ar) => {
             ar["cat_id"] = item.uid;
@@ -56,23 +56,23 @@ function Yoga({checkit}) {
       });
     };
   
-    const deleteyogaCatById = async (id) => {
-      await AXIOS.post(`/deleteyogaCatById`, { id: id }).then((res) => {
+    const deleteListenCatById = async (id) => {
+      await AXIOS.post(`/deleteListenCatById`, { id: id }).then((res) => {
         const data = res.data;
         console.log(data);
         setUpdate(update + 1);
       });
     };
   
-    const addyogaCat = async () => {
+    const addListenCat = async () => {
       setLoading(true);
   
       await AXIOS.post(
-        "/addyogaCat",
+        "/addListenCat",
         {
           categoryTitle,
           backgroundImage,
-          yogaRoutines: [],
+          listenRoutines: [],
         },
         {
           headers: {
@@ -87,7 +87,7 @@ function Yoga({checkit}) {
       });
     };
   
-    const addyogaToCat = async () => {
+    const addListenToCat = async () => {
       setLoading(true);
       let categorie = "";
       categories.forEach((cat) => {
@@ -97,7 +97,7 @@ function Yoga({checkit}) {
       });
       console.log(isLocked);
       await AXIOS.post(
-        "/addyogaToCat",
+        "/addListenToCat",
         {
           uid: category,
           category: categorie,
@@ -105,7 +105,7 @@ function Yoga({checkit}) {
           title,
           isLocked,
           duration,
-          yogaLink,
+          listenLink,
         },
         {
           headers: {
@@ -120,14 +120,14 @@ function Yoga({checkit}) {
       });
     };
   
-    const deleteyogaFromCat = async (category, id) => {
+    const deleteListenFromCat = async (category, id) => {
       let uid = "";
       categories.forEach((cat) => {
         if (cat.label === category) {
           uid = cat.value;
         }
       });
-      await AXIOS.post("/deleteyogaFromCat", { uid, id }).then((res) => {
+      await AXIOS.post("/deleteListenFromCat", { uid, id }).then((res) => {
         const data = res.data;
         console.log(data);
         setUpdate(update + 1);
@@ -147,7 +147,7 @@ function Yoga({checkit}) {
             }}
           >
             <div className="form">
-              <h2>New yoga Category</h2>
+              <h2>New listen Category</h2>
               <div className="row">
                 <label>Title</label>
                 <input
@@ -167,7 +167,7 @@ function Yoga({checkit}) {
                 {!loading ? (
                   <>
                     <SimpleButton text={"Close"} action={() => setShow(false)} />
-                    <MainButton text={"Submit"} action={addyogaCat} />
+                    <MainButton text={"Submit"} action={addListenCat} />
                   </>
                 ) : (
                   <>
@@ -182,7 +182,7 @@ function Yoga({checkit}) {
                   background: "#2f2f2f",
                 }}
               />
-              <h2>New yoga</h2>
+              <h2>New listen</h2>
               <div className="row">
                 <label>Title</label>
                 <input type="text" onChange={(e) => settitle(e.target.value)} />
@@ -214,11 +214,11 @@ function Yoga({checkit}) {
                 />
               </div>{" "}
               <div className="row">
-                <label>Mp4 File</label>
+                <label>Mp3 File</label>
                 <FileUploader
-                  handleChange={setyogaLink}
+                  handleChange={setlistenLink}
                   name="file"
-                  types={VIDEO_TYPE}
+                  types={UPLOAD_TYPE}
                 />
               </div>
               {/* <div className="row">
@@ -243,11 +243,22 @@ function Yoga({checkit}) {
                   <option value={true}>Yes</option>
                 </select>
               </div>
+              {/* <div className="row">
+                <label>Large</label>
+                <select
+                  name=""
+                  id=""
+                  onChange={(e) => setLarge(e.target.value === "true")}
+                >
+                  <option value={false}>No</option>
+                  <option value={true}>Yes</option>
+                </select>
+              </div> */}
               <div className="buttons">
                 {!loading ? (
                   <>
                     <SimpleButton text={"Close"} action={() => setShow(false)} />
-                    <MainButton text={"Submit"} action={addyogaToCat} />
+                    <MainButton text={"Submit"} action={addListenToCat} />
                   </>
                 ) : (
                   <>
@@ -261,14 +272,14 @@ function Yoga({checkit}) {
         <div className="fullpage">
           <div className="top">
             <div className="left">
-              <h3>yogas</h3>
+              <h3>listens</h3>
               <div className="links">
                 {/* <pre>{JSON.stringify(user)}</pre> */}
-                <Link to={"/"}>Home</Link> / <b>yogas</b>
+                <Link to={"/"}>Home</Link> / <b>listens</b>
               </div>
             </div>
             <div className="right">
-              <MainButton text={"New yoga"} action={() => setShow(true)} />
+              <MainButton text={"New listen"} action={() => setShow(true)} />
             </div>
           </div>
           <table className="table">
@@ -293,7 +304,7 @@ function Yoga({checkit}) {
                       <td>
                         <SecondButton
                           text={"Delete"}
-                          action={() => deleteyogaCatById(cat.value)}
+                          action={() => deleteListenCatById(cat.value)}
                         />
                       </td>
                     </tr>
@@ -328,7 +339,7 @@ function Yoga({checkit}) {
                         <img src={da.background} alt="" width={60} />
                       </td>
                       <td>
-                        <Link to={`/yogas/${da.cat_id}/${da.id}`}>
+                        <Link to={`/listens/${da.cat_id}/${da.id}`}>
                           {da.title}
                         </Link>
                       </td>
@@ -339,7 +350,7 @@ function Yoga({checkit}) {
                         />
                       </td>
                       <td>
-                        <audio controls src={da.yogaLink}></audio>
+                        <audio controls src={da.listenLink}></audio>
                       </td>
                       <td>{da.duration}</td>
                       {/* <td>{da[1].plays} </td> */}
@@ -361,17 +372,17 @@ function Yoga({checkit}) {
                         ) : (
                           <button>save in favorites</button>
                         )}
-                        <Link to={`/yogas/${da[1].createdAt}`}>
+                        <Link to={`/listens/${da[1].createdAt}`}>
                           Details
                         </Link>
                       </td> */}
                       {/* <td>
-                        <Link to={`/yogas/${da[0]}`}>Details</Link>
+                        <Link to={`/listens/${da[0]}`}>Details</Link>
                       </td> */}
                       <td>
                         <SecondButton
                           text={"Delete"}
-                          action={() => deleteyogaFromCat(da.cat_id, da.id)}
+                          action={() => deleteListenFromCat(da.cat_id, da.id)}
                         />
                       </td>
                     </tr>
@@ -384,4 +395,4 @@ function Yoga({checkit}) {
       </>)
 }
 
-export default Yoga
+export default Sounds_v2

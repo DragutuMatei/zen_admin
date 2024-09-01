@@ -13,20 +13,23 @@ function Login({ checkit }) {
 
     try {
       // const response = await AXIOS.post("register/", {
-      const response = await AXIOS.post("login/", {
-        email,
-        password,
-        // plan: "admin",
+      await AXIOS.post(
+        "login/",
+        {
+          email,
+          password,
+        },
+      ).then((res) => {
+        console.log(res);
       });
-      console.log(response);
-      if (response.data.admin) {
-        console.log("Login successful. Token:", response.data.token);
-        localStorage.setItem("auth", response.data.token);
-        checkit();
-        navigate("/meditations");
-      }
+      // if (response.data.admin) {
+      //   console.log("Login successful. Token:", response.data.token);
+      //   localStorage.setItem("auth", response.data.token);
+      //   checkit();
+      //   navigate("/meditations");
+      // }
     } catch (error) {
-      console.error("Login error:", error.response.data.error);
+      console.error("Login error:", error);
     }
   };
   return (

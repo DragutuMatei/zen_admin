@@ -37,24 +37,22 @@ function Meditations_v2({ checkit }) {
     setData([]);
     await AXIOS.get(`/getAllMedCats`).then((res) => {
       const data = res.data;
-      if (data.ok) {
-        data.data.forEach((item) => {
-          setCategories((old) => [
-            {
-              label: item.categoryTitle,
-              backgroundImage: item.backgroundImage,
-              value: item.uid,
-            },
-            ...old,
-          ]);
-          let arr = [...item.meditationRoutines];
+      data.data.forEach((item) => {
+        setCategories((old) => [
+          {
+            label: item.categoryTitle,
+            backgroundImage: item.backgroundImage,
+            value: item.uid,
+          },
+          ...old,
+        ]);
+        let arr = [...item.meditationRoutines];
 
-          arr.forEach((ar) => {
-            ar["cat_id"] = item.uid;
-          });
-          setData((old) => [...arr, ...old]);
+        arr.forEach((ar) => {
+          ar["cat_id"] = item.uid;
         });
-      }
+        setData((old) => [...arr, ...old]);
+      });
     });
   };
 
@@ -97,7 +95,7 @@ function Meditations_v2({ checkit }) {
         categorie = cat.label;
       }
     });
-
+    console.log(isLocked);
     await AXIOS.post(
       "/addMedToCat",
       {

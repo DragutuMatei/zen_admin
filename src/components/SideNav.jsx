@@ -5,6 +5,7 @@ import { IoCardSharp } from "react-icons/io5";
 import { GiSoundWaves } from "react-icons/gi";
 import { MdOutlineAir } from "react-icons/md";
 import SecondButton from "../utils/SecondButton";
+import { AXIOS } from "../utils/Contstants";
 
 function SideNav({ checkit }) {
   const navigate = useNavigate();
@@ -34,10 +35,13 @@ function SideNav({ checkit }) {
       </Link>
       <SecondButton
         text={"Logout"}
-        action={() => {
-          localStorage.removeItem("auth");
-          checkit();
-          navigate("/");
+        action={async () => {
+          await AXIOS.post("logout").then(res => {
+            console.log(res);
+          })
+          // localStorage.removeItem("auth");
+          // checkit();
+          // navigate("/");
         }}
       />
     </nav>

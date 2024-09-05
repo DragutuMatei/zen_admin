@@ -20,9 +20,10 @@ const CATEGORIES_SOUNDS = [
 ];
 
 const OPTIONS = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" },
+  { value: "prima", label: "prima" },
+  { value: "doi", label: "doi" },
+  { value: "trei", label: "trei" },
+  { value: "patru", label: "patru" },
 ];
 
 const AXIOS = axios.create({

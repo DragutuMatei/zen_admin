@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SideNav from "../components/SideNav";
-import { AXIOS, CATEGORIES, FILE_TYPE, UPLOAD_TYPE } from "../utils/Contstants";
+import { AXIOS, CATEGORIES, FILE_TYPE, OPTIONS, UPLOAD_TYPE } from "../utils/Contstants";
 import MainButton from "../utils/MainButton";
 import SimpleButton from "../utils/SimpleButton";
 import { FileUploader } from "react-drag-drop-files";
@@ -8,6 +8,7 @@ import Select from "react-select";
 import Footer from "../components/Footer";
 import SecondButton from "../utils/SecondButton";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Meditations_v2({ checkit }) {
   const [show, setShow] = useState(false);
@@ -27,6 +28,7 @@ function Meditations_v2({ checkit }) {
   const [meditationLink, setmeditationLink] = useState(null);
 
   const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
   const [update, setUpdate] = useState(0);
   useEffect(() => {
     getAllCategories();
@@ -95,7 +97,15 @@ function Meditations_v2({ checkit }) {
         categorie = cat.label;
       }
     });
-    console.log(isLocked);
+
+    let final_tags = [];
+
+    for (let i = 0; i < tags.length; i++) {
+      const e = tags[i];
+      final_tags.push(e.value)
+    }
+
+    console.log(isLocked, final_tags);
     await AXIOS.post(
       "/addMedToCat",
       {
@@ -106,6 +116,7 @@ function Meditations_v2({ checkit }) {
         isLocked,
         duration,
         meditationLink,
+        tags: JSON.stringify(final_tags)
       },
       {
         headers: {
@@ -117,6 +128,9 @@ function Meditations_v2({ checkit }) {
       setUpdate(update + 1);
       setLoading(false);
       setShow(false);
+    }).catch(er => {  
+      setLoading(false);
+      toast(er)
     });
   };
 
@@ -195,7 +209,8 @@ function Meditations_v2({ checkit }) {
                 onChange={(e) => setcategory(e.value)}
               />
             </div>
-            {/* <div className="row">
+
+ <div className="row">
               <label>Tags</label>
               <Select
                 className="select"
@@ -204,7 +219,7 @@ function Meditations_v2({ checkit }) {
                 options={OPTIONS}
                 onChange={(e) => setTags(e)}
               />
-            </div> */}
+            </div> 
             <div className="row">
               <label>Background</label>
               <FileUploader

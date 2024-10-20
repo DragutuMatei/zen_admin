@@ -78,7 +78,7 @@ function Mesaj({ checkit }) {
             </div>{" "}
             <div className="row">
               <label>Details</label>
-              <input type="text" onChange={(e) => setdetails(e.target.value)} />
+              <textarea onChange={(e) => setdetails(e.target.value)} />
             </div>
             <div className="buttons">
               {!loading ? (

@@ -37,7 +37,6 @@ const App = () => {
 
   useEffect(() => {
     console.log(isAuthenticated);
-    
   }, [, isAuthenticated]);
 
   return (
@@ -55,51 +54,19 @@ const App = () => {
           <Route
             path="/"
             // path="/meditations"
-            element={
-                <Meditations_v2 checkit={checkit} />
-            }
-          />
-          <Route
-            path="/messages"
-            element={
-                <Mesaj checkit={checkit} />
-            }
-          />
-          <Route
-            path="/breaths"
-            element={
-                <Breaths checkit={checkit} />
-            }
+            element={<Meditations_v2 checkit={checkit} />}
           />{" "}
           <Route
-            path="/yoga"
-            element={  <Yoga checkit={checkit} /> 
-            }
+            path="/meditations"
+            element={<Meditations_v2 checkit={checkit} />}
           />
-          <Route
-            path="/cards"
-            element={
-                <Cards checkit={checkit} />
-            }
-          />
-          <Route
-            path="/sounds"
-            element={
-                <Sounds_v2 checkit={checkit} />
-            }
-          />
-          <Route
-            path="/podcast"
-            element={
-                <Podcast checkit={checkit} />
-            }
-          />
-          <Route
-            path="/login"
-            element={
-                <Login checkit={checkit} />
-            }
-          />
+          <Route path="/messages" element={<Mesaj checkit={checkit} />} />
+          <Route path="/breaths" element={<Breaths checkit={checkit} />} />{" "}
+          <Route path="/yoga" element={<Yoga checkit={checkit} />} />
+          <Route path="/cards" element={<Cards checkit={checkit} />} />
+          <Route path="/sounds" element={<Sounds_v2 checkit={checkit} />} />
+          <Route path="/podcast" element={<Podcast checkit={checkit} />} />
+          <Route path="/login" element={<Login checkit={checkit} />} />
         </Routes>
         <ToastContainer draggable={true} position="top-center" />
       </Router>

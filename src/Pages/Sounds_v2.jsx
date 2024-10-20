@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SideNav from "../components/SideNav";
-import { AXIOS, CATEGORIES, FILE_TYPE, UPLOAD_TYPE } from "../utils/Contstants";
+import { AXIOS, CATEGORIES, CATEGORIES_SOUNDS, FILE_TYPE, UPLOAD_TYPE } from "../utils/Contstants";
 import MainButton from "../utils/MainButton";
 import SimpleButton from "../utils/SimpleButton";
 import { FileUploader } from "react-drag-drop-files";
@@ -8,7 +8,7 @@ import Select from "react-select";
 import Footer from "../components/Footer";
 import SecondButton from "../utils/SecondButton";
 import { Link } from "react-router-dom";
-
+ 
 function Sounds_v2({checkit}) {
     const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -191,7 +191,7 @@ function Sounds_v2({checkit}) {
                 <label>Category</label>
                 <Select
                   className="select"
-                  options={categories}
+                  options={CATEGORIES_SOUNDS}
                   onChange={(e) => setcategory(e.value)}
                 />
               </div>

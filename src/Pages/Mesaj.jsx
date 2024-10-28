@@ -17,6 +17,7 @@ function Mesaj({ checkit }) {
   const [author, setauthor] = useState("");
   const [details, setdetails] = useState("");
   const [data, setData] = useState([]);
+  const [order, setOrder] = useState(0);
 
   useEffect(() => {
     getAllMessages();
@@ -33,15 +34,19 @@ function Mesaj({ checkit }) {
 
   const addMessage = async () => {
     setLoading(true);
-    await AXIOS.post("/addMessage", { title, message, author, details }).then(
-      (res) => {
-        const data = res.data;
-        console.log(data);
-        setLoading(false);
-        setShow(false);
-        setUpdate(update + 1);
-      }
-    );
+    await AXIOS.post("/addMessage", {
+      title,
+      message,
+      author,
+      details,
+      order,
+    }).then((res) => {
+      const data = res.data;
+      console.log(data);
+      setLoading(false);
+      setShow(false);
+      setUpdate(update + 1);
+    });
   };
   const deleteMessage = async (id) => {
     await AXIOS.post("/deleteMessage", { id }).then((res) => {
@@ -67,6 +72,10 @@ function Mesaj({ checkit }) {
             <div className="row">
               <label>Title</label>
               <input type="text" onChange={(e) => settitle(e.target.value)} />
+            </div>
+            <div className="row">
+              <label>Order</label>
+              <input type="number" onChange={(e) => setOrder(e.target.value)} />
             </div>
             <div className="row">
               <label>Message</label>

@@ -3,33 +3,34 @@ import { AXIOS } from "../utils/Contstants";
 import MainButton from "../utils/MainButton";
 import { useNavigate } from "react-router-dom";
 
-function Login({ checkit }) {
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../Fire";
+import { toast } from "react-toastify";
+
+function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [error, setError] = useState(null);
+  const allowedUsers = ["mateidr7@gmail.com", "admin@zenapp.ro"];
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // Check if the email is in the list of allowed users
+    if (!allowedUsers.includes(email)) {
+      toast("Access denied. You do not have permission to log in.");
+      return;
+    }
+
     try {
-      // const response = await AXIOS.post("register/", {
-      await AXIOS.post(
-        "login/",
-        {
-          email,
-          password,
-        },
-      ).then((res) => {
-        console.log(res);
-      });
-      // if (response.data.admin) {
-      //   console.log("Login successful. Token:", response.data.token);
-      //   localStorage.setItem("auth", response.data.token);
-      //   checkit();
-      //   navigate("/meditations");
-      // }
+      await signInWithEmailAndPassword(auth, email, password);
+      alert("Login successful!");
+      // Optionally, redirect or perform other actions
     } catch (error) {
-      console.error("Login error:", error);
+      toast(error.message);
     }
   };
   return (

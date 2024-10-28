@@ -6,6 +6,8 @@ import { GiSoundWaves } from "react-icons/gi";
 import { MdOutlineAir } from "react-icons/md";
 import SecondButton from "../utils/SecondButton";
 import { AXIOS } from "../utils/Contstants";
+import { auth } from "../Fire";
+import { signOut } from "firebase/auth";
 
 function SideNav({ checkit }) {
   const navigate = useNavigate();
@@ -36,9 +38,7 @@ function SideNav({ checkit }) {
       <SecondButton
         text={"Logout"}
         action={async () => {
-          await AXIOS.post("logout").then(res => {
-            console.log(res);
-          })
+          await signOut(auth);
           // localStorage.removeItem("auth");
           // checkit();
           // navigate("/");

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import SideNav from "../components/SideNav";
-import { AXIOS, CATEGORIES, FILE_TYPE, OPTIONS, UPLOAD_TYPE } from "../utils/Contstants";
+import {
+  AXIOS,
+  CATEGORIES,
+  FILE_TYPE,
+  OPTIONS,
+  UPLOAD_TYPE,
+} from "../utils/Contstants";
 import MainButton from "../utils/MainButton";
 import SimpleButton from "../utils/SimpleButton";
 import { FileUploader } from "react-drag-drop-files";
@@ -18,6 +24,7 @@ function Meditations_v2({ checkit }) {
   //category
   const [categoryTitle, setcategoryTitle] = useState("");
   const [backgroundImage, setbackgroundImage] = useState(null);
+  const [order, setOrder] = useState(0);
 
   //meditatie
   const [category, setcategory] = useState("");
@@ -45,6 +52,7 @@ function Meditations_v2({ checkit }) {
             label: item.categoryTitle,
             backgroundImage: item.backgroundImage,
             value: item.uid,
+            order: item.order,
           },
           ...old,
         ]);
@@ -74,6 +82,7 @@ function Meditations_v2({ checkit }) {
       {
         categoryTitle,
         backgroundImage,
+        order,
         meditationRoutines: [],
       },
       {
@@ -102,7 +111,7 @@ function Meditations_v2({ checkit }) {
 
     for (let i = 0; i < tags.length; i++) {
       const e = tags[i];
-      final_tags.push(e.value)
+      final_tags.push(e.value);
     }
 
     console.log(isLocked, final_tags);
@@ -116,28 +125,31 @@ function Meditations_v2({ checkit }) {
         isLocked,
         duration,
         meditationLink,
-        tags: JSON.stringify(final_tags)
+        tags: JSON.stringify(final_tags),
       },
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       }
-    ).then((res) => {
-      const data = res.data;
-      setUpdate(update + 1);
-      setLoading(false);
-      setShow(false);
-    }).catch(er => {  
-      setLoading(false);
-      toast(er)
-    });
+    )
+      .then((res) => {
+        const data = res.data;
+        setUpdate(update + 1);
+        setLoading(false);
+        setShow(false);
+      })
+      .catch((er) => {
+        setLoading(false);
+        toast(er);
+      });
   };
 
   const deleteMedFromCat = async (category, id) => {
     let uid = "";
     categories.forEach((cat) => {
-      if (cat.label === category) {
+      console.log(cat, category);
+      if (cat.value === category) {
         uid = cat.value;
       }
     });
@@ -168,6 +180,10 @@ function Meditations_v2({ checkit }) {
                 type="text"
                 onChange={(e) => setcategoryTitle(e.target.value)}
               />
+            </div>{" "}
+            <div className="row">
+              <label>Order</label>
+              <input type="number" onChange={(e) => setOrder(e.target.value)} />
             </div>
             <div className="row">
               <label>Background</label>
@@ -209,8 +225,7 @@ function Meditations_v2({ checkit }) {
                 onChange={(e) => setcategory(e.value)}
               />
             </div>
-
- <div className="row">
+            <div className="row">
               <label>Tags</label>
               <Select
                 className="select"
@@ -219,7 +234,7 @@ function Meditations_v2({ checkit }) {
                 options={OPTIONS}
                 onChange={(e) => setTags(e)}
               />
-            </div> 
+            </div>
             <div className="row">
               <label>Background</label>
               <FileUploader
@@ -241,7 +256,7 @@ function Meditations_v2({ checkit }) {
               <input type="text" onChange={(e) => setVoice(e.target.value)} />
             </div> */}
             <div className="row">
-              <label>Duration (seconds)</label>
+              <label>Duration (minute)</label>
               <input
                 type="number"
                 onChange={(e) => setduration(e.target.value)}
@@ -301,17 +316,20 @@ function Meditations_v2({ checkit }) {
           <thead>
             <tr>
               <th>#</th>
-              <th>Image</th>
+              <th>order</th>
               <th>Title</th>
+              <th>Image</th>
               <th>Delete</th>
             </tr>
           </thead>
           <tbody>
             {categories &&
               categories.map((cat, index) => {
+                console.log(cat);
                 return (
                   <tr>
                     <td>{index}</td>
+                    <td>{cat.order}</td>
                     <td>{cat.label}</td>
                     <td>
                       <img src={cat.backgroundImage} width={60} alt="" />

@@ -32,7 +32,6 @@ function Meditations({ checkit }) {
   const cat = async (id) => {
     // await AXIOS.get(`meditations/${id}/category/`).then((res) => {
     //   console.log(res.data.data);
-
     //   setData(Object.entries(res.data.data).reverse());
     // });
   };
@@ -256,7 +255,7 @@ function Meditations({ checkit }) {
               <input type="text" onChange={(e) => setVoice(e.target.value)} />
             </div>
             <div className="row">
-              <label>Duration (seconds)</label>
+              <label>Duration (minute)</label>
               <input
                 type="number"
                 onChange={(e) => setDuration(e.target.value)}
@@ -387,7 +386,9 @@ function Meditations({ checkit }) {
                           save in favorites
                         </button>
                       )}
-                      <Link to={`/meditations/${da[1].createdAt}`}>Details</Link>
+                      <Link to={`/meditations/${da[1].createdAt}`}>
+                        Details
+                      </Link>
                     </td>
                     {/* <td>
                       <Link to={`/meditations/${da[0]}`}>Details</Link>

@@ -18,7 +18,7 @@ function Login() {
   const allowedUsers = ["mateidr7@gmail.com", "admin@zenapp.ro"];
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    toast("a inceput");
     // Check if the email is in the list of allowed users
     if (!allowedUsers.includes(email)) {
       toast("Access denied. You do not have permission to log in.");
@@ -27,7 +27,7 @@ function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("Login successful!");
+      toast("Login successful!");
       // Optionally, redirect or perform other actions
     } catch (error) {
       toast(error.message);

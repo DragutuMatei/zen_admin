@@ -47,7 +47,6 @@ const OPTIONS = [
 ];
 
 const AXIOS = axios.create({
-  // baseURL: "http://192.168.1.196:8000/",
   baseURL: process.env.REACT_APP_BACKEND_LINK,
 
   headers: {

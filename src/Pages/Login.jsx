@@ -16,6 +16,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const allowedUsers = ["mateidr7@gmail.com", "admin@zenapp.ro"];
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     toast("a inceput");
@@ -33,6 +34,7 @@ function Login() {
       toast(error.message);
     }
   };
+
   return (
     <div className="login">
       <form className="form" onSubmit={handleLogin}>

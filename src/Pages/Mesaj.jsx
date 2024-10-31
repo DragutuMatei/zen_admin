@@ -17,7 +17,6 @@ function Mesaj({ checkit }) {
   const [author, setauthor] = useState("");
   const [details, setdetails] = useState("");
   const [data, setData] = useState([]);
-  const [order, setOrder] = useState(0);
 
   useEffect(() => {
     getAllMessages();
@@ -31,15 +30,22 @@ function Mesaj({ checkit }) {
       setData(data.data);
     });
   };
-
+  function replace(text) {
+    return text.replace(/ț/g, "t");
+  }
   const addMessage = async () => {
     setLoading(true);
     await AXIOS.post("/addMessage", {
-      title,
-      message,
-      author,
-      details,
-      order,
+      title: replace(title)
+        .replace(/(\r\n|\r|\n)+/g, "!!!")
+        .split("!!!")[0],
+      message: replace(title)
+        .replace(/(\r\n|\r|\n)+/g, "!!!")
+        .split("!!!")[1],
+      author: replace(title)
+        .replace(/(\r\n|\r|\n)+/g, "!!!")
+        .split("!!!")[2],
+      details: replace(details).replace(/(\r\n|\r|\n)+/g, "!!!"),
     }).then((res) => {
       const data = res.data;
       console.log(data);
@@ -69,13 +75,14 @@ function Mesaj({ checkit }) {
         >
           <div className="form">
             <h2>New Message</h2>
+
             <div className="row">
+              <label>Title + messaje + author</label>
+              <textarea onChange={(e) => settitle(e.target.value)} />
+            </div>
+            {/* <div className="row">
               <label>Title</label>
               <input type="text" onChange={(e) => settitle(e.target.value)} />
-            </div>
-            <div className="row">
-              <label>Order</label>
-              <input type="number" onChange={(e) => setOrder(e.target.value)} />
             </div>
             <div className="row">
               <label>Message</label>
@@ -84,7 +91,7 @@ function Mesaj({ checkit }) {
             <div className="row">
               <label>Author</label>
               <input type="text" onChange={(e) => setauthor(e.target.value)} />
-            </div>{" "}
+            </div>{" "} */}
             <div className="row">
               <label>Details</label>
               <textarea onChange={(e) => setdetails(e.target.value)} />

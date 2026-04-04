@@ -47,7 +47,7 @@ const OPTIONS = [
 ];
 
 const AXIOS = axios.create({
-  baseURL: process.env.REACT_APP_BACKEND_LINK,
+  baseURL: "http://localhost:3001",
 
   headers: {
     "content-type": "application/json",

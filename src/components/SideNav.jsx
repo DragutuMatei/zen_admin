@@ -35,6 +35,9 @@ function SideNav({ checkit }) {
       <Link to="/sounds">
         <GiSoundWaves /> Sounds
       </Link>
+      <Link to="/discount-codes">
+        <IoCardSharp /> Discount Codes
+      </Link>
       <SecondButton
         text={"Logout"}
         action={async () => {

@@ -12,6 +12,7 @@ import MesajDetail from "./Pages/MesajDetail";
 import Podcast from "./Pages/Podcast";
 import Sounds_v2 from "./Pages/Sounds_v2";
 import Yoga from "./Pages/Yoga";
+import DiscountCodes from "./Pages/DiscountCodes";
 import "./scss/main.scss";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./Fire";
@@ -75,6 +76,10 @@ const App = () => {
           <Route
             path="/podcast"
             element={currentUser ? <Podcast checkit={checkit} /> : <Login />}
+          />
+          <Route
+            path="/discount-codes"
+            element={currentUser ? <DiscountCodes checkit={checkit} /> : <Login />}
           />
         </Routes>
         <ToastContainer draggable={true} position="top-center" />

@@ -63,6 +63,8 @@ function Meditations_v2({ checkit }) {
         });
         setData((old) => [...arr, ...old]);
       });
+    }).catch((err) => {
+      console.log(err);
     });
   };
 

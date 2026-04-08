@@ -40,22 +40,34 @@ function StoreCodes() {
     }
   };
 
-  const processInputAndUpload = async () => {
+  const processSave = async () => {
     if (alias.trim() === "") {
       toast("Introdu un nume/alias pentru cod!");
       return;
     }
     
-    const androidCodes = androidTextCodes.split(/[\n,]+/).map(c => c.trim()).filter(c => c.length > 0);
-    const iosCodes = iosTextCodes.split(/[\n,]+/).map(c => c.trim()).filter(c => c.length > 0);
-    
-    if (androidCodes.length === 0 && iosCodes.length === 0) {
-      toast("Nu ai introdus niciun cod valid.");
-      return;
-    }
-
     setLoading(true);
     let hasError = false;
+
+    // Actualizăm data de expirare pentru codurile deja existente (doar dacă suntem în EditMode)
+    if (isEditMode) {
+      try {
+        const payload = { alias: alias.trim(), expiresAt: expiresAt ? expiresAt : null };
+        const res = await AXIOS.post("/updateStoreCodes", payload);
+        if (!res.data.ok) hasError = true;
+      } catch (err) {
+        hasError = true;
+      }
+    }
+
+    const androidCodes = androidTextCodes.split(/[\n,]+/).map(c => c.trim()).filter(c => c.length > 0);
+    const iosCodes = iosTextCodes.split(/[\n,]+/).map(c => c.trim()).filter(c => c.length > 0);
+
+    if (!isEditMode && androidCodes.length === 0 && iosCodes.length === 0) {
+      toast("Trebuie sa incarci cel puțin un cod pentru o campanie nouă.");
+      setLoading(false);
+      return;
+    }
 
     if (androidCodes.length > 0) {
       try {
@@ -88,30 +100,9 @@ function StoreCodes() {
       setExpiresAt("");
       setShow(false);
       setIsEditMode(false);
-      toast(isEditMode ? "Timpul a fost actualizat!" : "Codurile au fost incarcate cu succes!");
+      toast("Salvat cu succes!");
       fetchStats();
     }
-  };
-
-  const processUpdate = async () => {
-    setLoading(true);
-    try {
-      const payload = { alias: alias.trim(), expiresAt: expiresAt ? expiresAt : null };
-      const res = await AXIOS.post("/updateStoreCodes", payload);
-      if (res.data.ok) {
-        toast("Codurile au fost actualizate cu succes!");
-        setAlias("");
-        setExpiresAt("");
-        setShow(false);
-        setIsEditMode(false);
-        fetchStats();
-      } else {
-        toast("Eroare la actualizare!");
-      }
-    } catch (err) {
-      toast("Eroare de rețea la actualizare.");
-    }
-    setLoading(false);
   };
 
   const deleteCampaign = async (aliasToDelete) => {
@@ -171,45 +162,43 @@ function StoreCodes() {
               <small>*(Dacă furnizezi o dată, codurile nu vor mai fi returnate aplicației după acea zi. Dacă lași gol, nu expiră din backend, dar vor fi supuse expirărilor din Google/Apple).*</small>
             </div>
 
-            {!isEditMode && (
-              <>
-                <hr style={{margin: '20px 0', borderColor: '#444'}}/>
-                <div className="row">
-                  <label style={{color: '#a4d955'}}>🍏 Coduri iOS (App Store)</label>
-                  <div style={{display:'flex', justifyContent: 'space-between'}}>
-                     <input type="file" accept=".csv,.txt" onChange={(e) => handleFileUpload(e, 'ios')} />
-                  </div>
-                  <textarea 
-                    rows={3} 
-                    value={iosTextCodes}
-                    onChange={(e) => setIosTextCodes(e.target.value)}
-                    placeholder={"COD_IOS_1\nCOD_IOS_2"}
-                    style={{marginTop: 5}}
-                  />
-                  <small>Avem {iosTextCodes.split(/[\n,]+/).filter(c=>c.trim().length>0).length} coduri pt iOS.</small>
-                </div>
-                <div className="row" style={{ marginTop: 15 }}>
-                  <label style={{color: '#55a4d9'}}>🤖 Coduri Android (Google Play)</label>
-                  <div style={{display:'flex', justifyContent: 'space-between'}}>
-                     <input type="file" accept=".csv,.txt" onChange={(e) => handleFileUpload(e, 'android')} />
-                  </div>
-                  <textarea 
-                    rows={3} 
-                    value={androidTextCodes}
-                    onChange={(e) => setAndroidTextCodes(e.target.value)}
-                    placeholder={"COD_ANDROID_1\nCOD_ANDROID_2"}
-                    style={{marginTop: 5}}
-                  />
-                  <small>Avem {androidTextCodes.split(/[\n,]+/).filter(c=>c.trim().length>0).length} coduri pt Android.</small>
-                </div>
-              </>
-            )}
+            <hr style={{margin: '20px 0', borderColor: '#444'}}/>
+            {isEditMode && <p style={{color: 'orange', fontSize: 13, marginBottom: 15}}><b>Info:</b> Adaugă coduri noi aici pentru a suplimenta stocul campaniei {alias}. Cele vechi vor fi păstrate!</p>}
+            
+            <div className="row">
+              <label style={{color: '#a4d955'}}>🍏 Coduri iOS {isEditMode ? '(Adaugă în plus)' : '(App Store)'}</label>
+              <div style={{display:'flex', justifyContent: 'space-between'}}>
+                 <input type="file" accept=".csv,.txt" onChange={(e) => handleFileUpload(e, 'ios')} />
+              </div>
+              <textarea 
+                rows={3} 
+                value={iosTextCodes}
+                onChange={(e) => setIosTextCodes(e.target.value)}
+                placeholder={"COD_IOS_1\nCOD_IOS_2"}
+                style={{marginTop: 5}}
+              />
+              <small>Avem {iosTextCodes.split(/[\n,]+/).filter(c=>c.trim().length>0).length} coduri pt iOS.</small>
+            </div>
+            <div className="row" style={{ marginTop: 15 }}>
+              <label style={{color: '#55a4d9'}}>🤖 Coduri Android {isEditMode ? '(Adaugă în plus)' : '(Google Play)'}</label>
+              <div style={{display:'flex', justifyContent: 'space-between'}}>
+                 <input type="file" accept=".csv,.txt" onChange={(e) => handleFileUpload(e, 'android')} />
+              </div>
+              <textarea 
+                rows={3} 
+                value={androidTextCodes}
+                onChange={(e) => setAndroidTextCodes(e.target.value)}
+                placeholder={"COD_ANDROID_1\nCOD_ANDROID_2"}
+                style={{marginTop: 5}}
+              />
+              <small>Avem {androidTextCodes.split(/[\n,]+/).filter(c=>c.trim().length>0).length} coduri pt Android.</small>
+            </div>
 
             <div className="buttons" style={{marginTop: 15}}>
               {!loading ? (
                 <>
                   <SimpleButton text={"Close"} action={() => {setShow(false); setIsEditMode(false);}} />
-                  <MainButton text={isEditMode ? "Actualizează Date" : "Submit"} action={isEditMode ? processUpdate : processInputAndUpload} />
+                  <MainButton text={isEditMode ? "Salvează & Suplimentează" : "Creează Campanie"} action={processSave} />
                 </>
               ) : (
                 <p>Loading...</p>

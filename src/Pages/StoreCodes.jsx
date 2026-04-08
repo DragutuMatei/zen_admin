@@ -6,7 +6,7 @@ import SimpleButton from "../utils/SimpleButton";
 import SideNav from "../components/SideNav";
 import { toast } from "react-toastify";
 import { AXIOS } from "../utils/Contstants";
-import Papa from "papaparse"; // Vom folosi manual delimitatorul dac[ nu avem papaparse, dar mai simplu e split pe \n
+// Vom folosi manual delimitatorul dac[ nu avem papaparse, dar mai simplu e split pe \n
 // actually nu avem neaparat papaparse in deps, let's use string split.
 
 function StoreCodes() {

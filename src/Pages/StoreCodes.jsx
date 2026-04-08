@@ -21,6 +21,7 @@ function StoreCodes() {
   const [expiresAt, setExpiresAt] = useState("");
   
   const [data, setData] = useState([]);
+  const [rawCodes, setRawCodes] = useState([]);
 
   useEffect(() => {
     fetchStats();
@@ -37,6 +38,33 @@ function StoreCodes() {
     } catch (err) {
       console.log(err);
       toast.error("Eroare de conexiune la statistici.");
+    }
+  };
+
+  const fetchRawStoreCodes = async (aliasName) => {
+    try {
+      const res = await AXIOS.post("/getRawStoreCodes", { alias: aliasName });
+      if (res.data.ok) {
+        setRawCodes(res.data.data);
+      } else {
+        toast("Eroare la preluarea codurilor individuale");
+      }
+    } catch (e) {
+       console.log(e);
+    }
+  };
+
+  const deleteSingleCode = async (docId) => {
+    if(!window.confirm("Ștergi acest cod definitiv?")) return;
+    try {
+      const res = await AXIOS.post("/deleteSingleStoreCode", { docId });
+      if(res.data.ok) {
+        toast("Cod șters.");
+        fetchRawStoreCodes(alias); // refresh list
+        fetchStats();          // refresh main dashboard
+      }
+    } catch (e) {
+      toast("Eroare stergere cod");
     }
   };
 
@@ -100,6 +128,7 @@ function StoreCodes() {
       setExpiresAt("");
       setShow(false);
       setIsEditMode(false);
+      setRawCodes([]);
       toast("Salvat cu succes!");
       fetchStats();
     }
@@ -194,6 +223,39 @@ function StoreCodes() {
               <small>Avem {androidTextCodes.split(/[\n,]+/).filter(c=>c.trim().length>0).length} coduri pt Android.</small>
             </div>
 
+            {isEditMode && rawCodes.length > 0 && (
+              <div style={{marginTop: 20}}>
+                <hr style={{margin: '20px 0', borderColor: '#444'}}/>
+                <h3 style={{fontSize: 16, marginBottom: 10}}>Coduri Individuale ({rawCodes.length})</h3>
+                <div className="custom-scrollbar" style={{maxHeight: 250, overflowY: 'auto', background: '#222', padding: 10, borderRadius: 5}}>
+                  <table style={{width: '100%', fontSize: 13, textAlign: 'left', borderCollapse: 'collapse'}}>
+                    <thead>
+                      <tr>
+                        <th style={{padding: '5px', borderBottom: '1px solid #444'}}>Cod Magazin</th>
+                        <th style={{padding: '5px', borderBottom: '1px solid #444'}}>Platformă</th>
+                        <th style={{padding: '5px', borderBottom: '1px solid #444'}}>Status</th>
+                        <th style={{padding: '5px', borderBottom: '1px solid #444', textAlign: 'right'}}>Acțiune</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rawCodes.map(c => (
+                        <tr key={c.id}>
+                          <td style={{padding: '5px', borderBottom: '1px solid #333', fontFamily: 'monospace'}}>{c.code}</td>
+                          <td style={{padding: '5px', borderBottom: '1px solid #333'}}>{c.platform}</td>
+                          <td style={{padding: '5px', borderBottom: '1px solid #333', color: c.isUsed ? '#ff4d4d' : '#4dff4d'}}>{c.isUsed ? `Consumat (${c.usedByEmail.split('@')[0]}...)` : 'Liber'}</td>
+                          <td style={{padding: '5px', borderBottom: '1px solid #333', textAlign: 'right'}}>
+                            {!c.isUsed ? (
+                               <button onClick={() => deleteSingleCode(c.id)} style={{background: 'red', color: 'white', border: 'none', borderRadius: 3, cursor: 'pointer', padding: '4px 8px'}}>Sterge</button>
+                            ) : '-'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             <div className="buttons" style={{marginTop: 15}}>
               {!loading ? (
                 <>
@@ -256,6 +318,7 @@ function StoreCodes() {
                           setExpiresAt(item.expiresAt ? item.expiresAt.substring(0, 10) : "");
                           setIsEditMode(true);
                           setShow(true);
+                          fetchRawStoreCodes(item.alias);
                        }} style={{background: 'orange', padding: '5px 10px', borderRadius: 4, cursor: 'pointer', border: 'none', color: '#fff'}}>Edit</button>
                        <button onClick={() => deleteCampaign(item.alias)} style={{background: 'red', padding: '5px 10px', borderRadius: 4, cursor: 'pointer', border: 'none', color: '#fff'}}>🗑</button>
                     </td>

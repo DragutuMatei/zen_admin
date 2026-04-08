@@ -17,6 +17,7 @@ function StoreCodes() {
   const [alias, setAlias] = useState("");
   const [platform, setPlatform] = useState("android");
   const [textCodes, setTextCodes] = useState("");
+  const [expiresAt, setExpiresAt] = useState("");
   
   const [data, setData] = useState([]);
 
@@ -58,13 +59,15 @@ function StoreCodes() {
       const payload = {
         alias: alias.trim(),
         platform,
-        codes: cleanCodes
+        codes: cleanCodes,
+        expiresAt: expiresAt ? expiresAt : null
       };
       
       const res = await AXIOS.post("/addStoreCodes", payload);
       if (res.data.ok) {
         setAlias("");
         setTextCodes("");
+        setExpiresAt("");
         setShow(false);
         toast("Coduri adaugate cu succes!");
         fetchStats();
@@ -120,6 +123,12 @@ function StoreCodes() {
             </div>
             
             <div className="row" style={{ marginTop: 15 }}>
+              <label>Data Expirare Backend (Optional):</label>
+              <input type="date" value={expiresAt} onChange={(e) => setExpiresAt(e.target.value)} />
+              <small>*(Dacă furnizezi o dată, codurile nu vor mai fi returnate aplicației după acea zi. Dacă lași gol, nu expiră din backend, dar vor fi supuse expirărilor din Google/Apple).*</small>
+            </div>
+
+            <div className="row" style={{ marginTop: 15 }}>
               <label>Adauga din fisier CSV (.csv / id-uri unice per rand)</label>
               <input type="file" accept=".csv,.txt" onChange={handleFileUpload} />
             </div>
@@ -173,8 +182,9 @@ function StoreCodes() {
               <th>Alias (Campanie)</th>
               <th>Platforma</th>
               <th>Total Coduri</th>
-              <th>Folosite (Revendicate)</th>
+              <th>Folosite</th>
               <th>Disponibile</th>
+              <th>Expiră la</th>
             </tr>
           </thead>
           <tbody>
@@ -188,6 +198,7 @@ function StoreCodes() {
                     <td>{item.total}</td>
                     <td style={{color: 'red'}}>{item.used}</td>
                     <td style={{color: 'green', fontWeight:'bold'}}>{item.total - item.used}</td>
+                    <td>{item.expiresAt ? item.expiresAt.substring(0, 10) : 'Fără expirare'}</td>
                   </tr>
                 );
               })}

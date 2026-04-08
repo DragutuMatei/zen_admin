@@ -12,6 +12,7 @@ import { AXIOS } from "../utils/Contstants";
 function StoreCodes() {
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false); // Pentru Update
   
   // Form states
   const [alias, setAlias] = useState("");
@@ -79,15 +80,52 @@ function StoreCodes() {
     setLoading(false);
 
     if (hasError) {
-      toast("Au aparut erori la adaugarea unor coduri!");
+      toast("Au aparut erori la salvare!");
     } else {
       setAlias("");
       setAndroidTextCodes("");
       setIosTextCodes("");
       setExpiresAt("");
       setShow(false);
-      toast("Codurile au fost incarcate cu succes!");
+      setIsEditMode(false);
+      toast(isEditMode ? "Timpul a fost actualizat!" : "Codurile au fost incarcate cu succes!");
       fetchStats();
+    }
+  };
+
+  const processUpdate = async () => {
+    setLoading(true);
+    try {
+      const payload = { alias: alias.trim(), expiresAt: expiresAt ? expiresAt : null };
+      const res = await AXIOS.post("/updateStoreCodes", payload);
+      if (res.data.ok) {
+        toast("Codurile au fost actualizate cu succes!");
+        setAlias("");
+        setExpiresAt("");
+        setShow(false);
+        setIsEditMode(false);
+        fetchStats();
+      } else {
+        toast("Eroare la actualizare!");
+      }
+    } catch (err) {
+      toast("Eroare de rețea la actualizare.");
+    }
+    setLoading(false);
+  };
+
+  const deleteCampaign = async (aliasToDelete) => {
+    if (!window.confirm(`Ești sigur că vrei să ștergi TOATE codurile pentru aliasul: ${aliasToDelete}?`)) return;
+    try {
+      const res = await AXIOS.post("/deleteStoreCodes", { alias: aliasToDelete });
+      if (res.data.ok) {
+        toast("Campanie ștearsă.");
+        fetchStats();
+      } else {
+        toast("Eroare la ștergere.");
+      }
+    } catch (e) {
+      toast("A apărut o eroare la conexiune.");
     }
   };
 
@@ -122,10 +160,10 @@ function StoreCodes() {
           }}
         >
           <div className="form">
-            <h2>Add Store Promo Codes</h2>
+            <h2>{isEditMode ? "Actualizare Deadline Campanie" : "Add Store Promo Codes"}</h2>
             <div className="row">
               <label>Alias / Nume Campanie (ex: ZEN_PROMO)</label>
-              <input type="text" value={alias} onChange={(e) => setAlias(e.target.value.toUpperCase())} />
+              <input type="text" value={alias} disabled={isEditMode} onChange={(e) => setAlias(e.target.value.toUpperCase())} />
             </div>
             <div className="row" style={{ marginTop: 15 }}>
               <label>Data Expirare Backend (Optional):</label>
@@ -133,43 +171,45 @@ function StoreCodes() {
               <small>*(Dacă furnizezi o dată, codurile nu vor mai fi returnate aplicației după acea zi. Dacă lași gol, nu expiră din backend, dar vor fi supuse expirărilor din Google/Apple).*</small>
             </div>
 
-            <hr style={{margin: '20px 0', borderColor: '#444'}}/>
-
-            <div className="row">
-              <label style={{color: '#a4d955'}}>🍏 Coduri iOS (App Store)</label>
-              <div style={{display:'flex', justifyContent: 'space-between'}}>
-                 <input type="file" accept=".csv,.txt" onChange={(e) => handleFileUpload(e, 'ios')} />
-              </div>
-              <textarea 
-                rows={3} 
-                value={iosTextCodes}
-                onChange={(e) => setIosTextCodes(e.target.value)}
-                placeholder={"COD_IOS_1\nCOD_IOS_2"}
-                style={{marginTop: 5}}
-              />
-              <small>Avem {iosTextCodes.split(/[\n,]+/).filter(c=>c.trim().length>0).length} coduri pt iOS.</small>
-            </div>
-
-            <div className="row" style={{ marginTop: 15 }}>
-              <label style={{color: '#55a4d9'}}>🤖 Coduri Android (Google Play)</label>
-              <div style={{display:'flex', justifyContent: 'space-between'}}>
-                 <input type="file" accept=".csv,.txt" onChange={(e) => handleFileUpload(e, 'android')} />
-              </div>
-              <textarea 
-                rows={3} 
-                value={androidTextCodes}
-                onChange={(e) => setAndroidTextCodes(e.target.value)}
-                placeholder={"COD_ANDROID_1\nCOD_ANDROID_2"}
-                style={{marginTop: 5}}
-              />
-              <small>Avem {androidTextCodes.split(/[\n,]+/).filter(c=>c.trim().length>0).length} coduri pt Android.</small>
-            </div>
+            {!isEditMode && (
+              <>
+                <hr style={{margin: '20px 0', borderColor: '#444'}}/>
+                <div className="row">
+                  <label style={{color: '#a4d955'}}>🍏 Coduri iOS (App Store)</label>
+                  <div style={{display:'flex', justifyContent: 'space-between'}}>
+                     <input type="file" accept=".csv,.txt" onChange={(e) => handleFileUpload(e, 'ios')} />
+                  </div>
+                  <textarea 
+                    rows={3} 
+                    value={iosTextCodes}
+                    onChange={(e) => setIosTextCodes(e.target.value)}
+                    placeholder={"COD_IOS_1\nCOD_IOS_2"}
+                    style={{marginTop: 5}}
+                  />
+                  <small>Avem {iosTextCodes.split(/[\n,]+/).filter(c=>c.trim().length>0).length} coduri pt iOS.</small>
+                </div>
+                <div className="row" style={{ marginTop: 15 }}>
+                  <label style={{color: '#55a4d9'}}>🤖 Coduri Android (Google Play)</label>
+                  <div style={{display:'flex', justifyContent: 'space-between'}}>
+                     <input type="file" accept=".csv,.txt" onChange={(e) => handleFileUpload(e, 'android')} />
+                  </div>
+                  <textarea 
+                    rows={3} 
+                    value={androidTextCodes}
+                    onChange={(e) => setAndroidTextCodes(e.target.value)}
+                    placeholder={"COD_ANDROID_1\nCOD_ANDROID_2"}
+                    style={{marginTop: 5}}
+                  />
+                  <small>Avem {androidTextCodes.split(/[\n,]+/).filter(c=>c.trim().length>0).length} coduri pt Android.</small>
+                </div>
+              </>
+            )}
 
             <div className="buttons" style={{marginTop: 15}}>
               {!loading ? (
                 <>
-                  <SimpleButton text={"Close"} action={() => setShow(false)} />
-                  <MainButton text={"Submit"} action={processInputAndUpload} />
+                  <SimpleButton text={"Close"} action={() => {setShow(false); setIsEditMode(false);}} />
+                  <MainButton text={isEditMode ? "Actualizează Date" : "Submit"} action={isEditMode ? processUpdate : processInputAndUpload} />
                 </>
               ) : (
                 <p>Loading...</p>
@@ -191,6 +231,8 @@ function StoreCodes() {
               setAlias("");
               setAndroidTextCodes("");
               setIosTextCodes("");
+              setExpiresAt("");
+              setIsEditMode(false);
               setShow(true);
             }} />
           </div>
@@ -201,25 +243,33 @@ function StoreCodes() {
             <tr>
               <th>#</th>
               <th>Alias (Campanie)</th>
-              <th>Platforma</th>
-              <th>Total Coduri</th>
-              <th>Folosite</th>
-              <th>Disponibile</th>
+              <th>Platforme</th>
+              <th>Coduri Noi</th>
+              <th>Aplicate</th>
               <th>Expiră la</th>
+              <th>Acțiuni</th>
             </tr>
           </thead>
           <tbody>
             {data &&
               data.map((item, index) => {
                 return (
-                  <tr key={item.alias + item.platform}>
+                  <tr key={item.alias}>
                     <td>{index + 1}</td>
                     <td style={{fontWeight:'bold'}}>{item.alias}</td>
-                    <td>{item.platform === 'android' ? 'Android' : 'iOS'}</td>
-                    <td>{item.total}</td>
+                    <td>{item.platforms.toUpperCase()}</td>
+                    <td style={{color: 'green', fontWeight:'bold'}}>{item.total - item.used} din {item.total}</td>
                     <td style={{color: 'red'}}>{item.used}</td>
-                    <td style={{color: 'green', fontWeight:'bold'}}>{item.total - item.used}</td>
                     <td>{item.expiresAt ? item.expiresAt.substring(0, 10) : 'Fără expirare'}</td>
+                    <td style={{display: 'flex', gap: '10px'}}>
+                       <button onClick={() => {
+                          setAlias(item.alias);
+                          setExpiresAt(item.expiresAt ? item.expiresAt.substring(0, 10) : "");
+                          setIsEditMode(true);
+                          setShow(true);
+                       }} style={{background: 'orange', padding: '5px 10px', borderRadius: 4, cursor: 'pointer', border: 'none', color: '#fff'}}>Edit</button>
+                       <button onClick={() => deleteCampaign(item.alias)} style={{background: 'red', padding: '5px 10px', borderRadius: 4, cursor: 'pointer', border: 'none', color: '#fff'}}>🗑</button>
+                    </td>
                   </tr>
                 );
               })}

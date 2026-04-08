@@ -38,6 +38,9 @@ function SideNav({ checkit }) {
       <Link to="/discount-codes">
         <IoCardSharp /> Discount Codes
       </Link>
+      <Link to="/store-codes">
+        <IoCardSharp /> Store Codes
+      </Link>
       <SecondButton
         text={"Logout"}
         action={async () => {

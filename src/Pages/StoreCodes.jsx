@@ -257,7 +257,7 @@ function StoreCodes() {
                   <tr key={item.alias}>
                     <td>{index + 1}</td>
                     <td style={{fontWeight:'bold'}}>{item.alias}</td>
-                    <td>{item.platforms.toUpperCase()}</td>
+                    <td>{item.platforms ? item.platforms.toUpperCase() : (item.platform ? item.platform.toUpperCase() : '')}</td>
                     <td style={{color: 'green', fontWeight:'bold'}}>{item.total - item.used} din {item.total}</td>
                     <td style={{color: 'red'}}>{item.used}</td>
                     <td>{item.expiresAt ? item.expiresAt.substring(0, 10) : 'Fără expirare'}</td>
